@@ -216,7 +216,7 @@ then
     # already a pre-release available, bump it
     if [[ "$pre_tag" =~ $new ]] && [[ "$pre_tag" =~ $suffix ]]
     then
-        new=${tagPrefix}$(semver -i prerelease "${pre_tag}" --preid "${suffix}")
+        new=${tagPrefix}$(semver -i prerelease "${pre_tag#"$tagPrefix"}" --preid "${suffix}")
         echo -e "Bumping ${suffix} pre-tag ${pre_tag}. New pre-tag ${new}"
     else
         new="${new}-${suffix}.0"
