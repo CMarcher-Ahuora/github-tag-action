@@ -2,6 +2,8 @@
 
 set -eo pipefail
 
+shopt -s extglob  # Enable extended globbing
+
 # config
 default_semvar_bump=${DEFAULT_BUMP:-minor}
 default_branch=${DEFAULT_BRANCH:-$GITHUB_BASE_REF} # get the default branch from github runner env vars
