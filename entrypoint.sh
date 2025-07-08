@@ -181,26 +181,33 @@ then
 else
   current_tag="$(echo ${tag}| sed "s/${tagPrefix}//g")"
 fi
+
+handleNoDefaultBump() {
+    echo "Default bump was set to none. Skipping..."
+    setOutput "new_tag" "$tag"
+    setOutput "tag" "$tag"
+    setOutput "part" "$default_semvar_bump"
+
+    if [[ "$pre_tag" =~ $tag ]] && [[ "$pre_tag" =~ $suffix ]]
+    then
+        setOutput "old_tag" "$old_pre_tag"
+    else
+        setOutput "old_tag" "$old_tag"
+    fi
+            
+    exit 0
+}
+
 case "$log" in
     *$major_string_token* ) new=${tagPrefix}$(semver -i major "${current_tag}"); part="major";;
     *$minor_string_token* ) new=${tagPrefix}$(semver -i minor "${current_tag}"); part="minor";;
     *$patch_string_token* ) new=${tagPrefix}$(semver -i patch "${current_tag}"); part="patch";;
     *$none_string_token* )
-        echo "Default bump was set to none. Skipping..."
-        setOutput "old_tag" "$old_tag"
-        setOutput "new_tag" "$tag"
-        setOutput "tag" "$tag"
-        setOutput "part" "$default_semvar_bump"
-        exit 0;;
+        handleNoDefaultBump;;
     * )
         if [ "$default_semvar_bump" == "none" ]
         then
-            echo "Default bump was set to none. Skipping..."
-            setOutput "old_tag" "$old_tag"
-            setOutput "new_tag" "$tag"
-            setOutput "tag" "$tag"
-            setOutput "part" "$default_semvar_bump"
-            exit 0
+            handleNoDefaultBump
         else
             new=${tagPrefix}$(semver -i "${default_semvar_bump}" "${current_tag}")
             part=$default_semvar_bump
