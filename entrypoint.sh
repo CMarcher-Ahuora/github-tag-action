@@ -188,8 +188,9 @@ handleNoDefaultBump() {
     setOutput "tag" "$tag"
     setOutput "part" "$default_semvar_bump"
 
-    if [[ "$pre_tag" =~ $tag ]] && [[ "$pre_tag" =~ $suffix ]]
-    then
+    # Check that the prelease tag is equal to or greater than the base tag, ignoring the prerelease suffix
+    # We don't want to set the old tag to pre_tag if the found pre_tag is from a lower semver version.
+    if [[ -n $(semver "${pre_tag#"$tagPrefix"}" --range ">=$current_tag" -n 0 --preid prerelease --include-prerelease) ]]; then
         setOutput "old_tag" "$old_pre_tag"
     else
         setOutput "old_tag" "$old_tag"
