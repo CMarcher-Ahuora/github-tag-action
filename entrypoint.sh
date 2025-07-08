@@ -213,6 +213,7 @@ then
         echo "No new commits since previous pre_tag. Skipping..."
         setOutput "new_tag" "$pre_tag"
         setOutput "tag" "$pre_tag"
+        setOutput "old_tag" "$pre_tag"
         exit 0
     fi
     # already a pre-release available, bump it
@@ -220,13 +221,16 @@ then
     then
         new=${tagPrefix}$(semver -i prerelease "${pre_tag#"$tagPrefix"}" --preid "${suffix}")
         echo -e "Bumping ${suffix} pre-tag ${pre_tag}. New pre-tag ${new}"
+        setOutput "old_tag" "$pre_tag"
     else
         new="${new}-${suffix}.0"
         echo -e "Setting ${suffix} pre-tag ${pre_tag} - With pre-tag ${new}"
+        setOutput "old_tag" "$tag"
     fi
     part="pre-$part"
 else
     echo -e "Bumping tag ${tag} - New tag ${new}"
+    setOutput "old_tag" "$tag"
 fi
 
 # as defined in readme if CUSTOM_TAG is used any semver calculations are irrelevant.
@@ -239,7 +243,6 @@ fi
 setOutput "new_tag" "$new"
 setOutput "part" "$part"
 setOutput "tag" "$new" # this needs to go in v2 is breaking change
-setOutput "old_tag" "$tag"
 
 # dry run exit without real changes
 if $dryrun
