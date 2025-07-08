@@ -2,19 +2,11 @@
 
 A GitHub Action to automatically bump and tag master, on merge, with the latest SemVer formatted version.
 
-[![Build Status](https://github.com/anothrNick/github-tag-action/workflows/Bump%20version/badge.svg)](https://github.com/anothrNick/github-tag-action/workflows/Bump%20version/badge.svg)
-[![Stable Version](https://img.shields.io/github/v/tag/anothrNick/github-tag-action)](https://img.shields.io/github/v/tag/anothrNick/github-tag-action)
-[![Latest Release](https://img.shields.io/github/v/release/anothrNick/github-tag-action?color=%233D9970)](https://img.shields.io/github/v/release/anothrNick/github-tag-action?color=%233D9970)
-
-> Medium Post: [Creating A GitHub Action to Tag Commits](https://itnext.io/creating-a-github-action-to-tag-commits-2722f1560dec)
-
-[<img src="https://miro.medium.com/max/1200/1*_4Ex1uUhL93a3bHyC-TgPg.png" width="400">](https://itnext.io/creating-a-github-action-to-tag-commits-2722f1560dec)
-
-> 📣 [This project is seeking maintainers!](https://github.com/anothrNick/github-tag-action/issues/238) 📣
+Customised from the fork (which was itself a fork) to fix several bugs:
+- Pre-release tag bumping
+- Setting the old_tag output from either the base tag or pre-release tag
 
 ## Usage
-
-_Note: We don't recommend using the @master version unless you're happy to test the latest changes._
 
 ```yaml
 # example 1: on push to master
@@ -35,7 +27,7 @@ jobs:
         fetch-depth: '0'
 
     - name: Bump version and push tag
-      uses: anothrNick/github-tag-action@v1 # Don't use @master or @v1 unless you're happy to test the latest version
+      uses: CMarcher-Ahuora/github-tag-action@master # Don't use @master unless you're happy to test the latest version. Use a commit SHA
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # if you don't want to set write permissions use a PAT token
 ```
@@ -63,7 +55,7 @@ jobs:
         fetch-depth: '0'
 
     - name: Bump version and push tag
-      uses: anothrNick/github-tag-action@v1 # Don't use @master or @v1 unless you're happy to test the latest version
+      uses: CMarcher-Ahuora/github-tag-action@master # Don't use @master unless you're happy to test the latest version. Use a commit SHA
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # if you don't want to set write permissions use a PAT token
         TAG_PREFIX: v
