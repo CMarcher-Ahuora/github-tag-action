@@ -124,6 +124,10 @@ matching_pre_tag_refs=$( (grep -E "$preTagFmt" <<< "$git_refs") || true)
 tag=$(head -n 1 <<< "$matching_tag_refs")
 pre_tag=$(head -n 1 <<< "$matching_pre_tag_refs")
 
+# Initialise old tag values
+old_tag=$tag
+old_pre_tag=$pre_tag
+
 # if there are none, start tags at initial version
 if [ -z "$tag" ]
 then
@@ -144,6 +148,7 @@ then
     echo "No new commits since previous tag. Skipping..."
     setOutput "new_tag" "$tag"
     setOutput "tag" "$tag"
+    setOutput "old_tag" "$old_tag"
     exit 0
 fi
 
@@ -182,7 +187,7 @@ case "$log" in
     *$patch_string_token* ) new=${tagPrefix}$(semver -i patch "${current_tag}"); part="patch";;
     *$none_string_token* )
         echo "Default bump was set to none. Skipping..."
-        setOutput "old_tag" "$tag"
+        setOutput "old_tag" "$old_tag"
         setOutput "new_tag" "$tag"
         setOutput "tag" "$tag"
         setOutput "part" "$default_semvar_bump"
@@ -191,7 +196,7 @@ case "$log" in
         if [ "$default_semvar_bump" == "none" ]
         then
             echo "Default bump was set to none. Skipping..."
-            setOutput "old_tag" "$tag"
+            setOutput "old_tag" "$old_tag"
             setOutput "new_tag" "$tag"
             setOutput "tag" "$tag"
             setOutput "part" "$default_semvar_bump"
@@ -213,7 +218,7 @@ then
         echo "No new commits since previous pre_tag. Skipping..."
         setOutput "new_tag" "$pre_tag"
         setOutput "tag" "$pre_tag"
-        setOutput "old_tag" "$pre_tag"
+        setOutput "old_tag" "$old_pre_tag"
         exit 0
     fi
     # already a pre-release available, bump it
@@ -221,16 +226,16 @@ then
     then
         new=${tagPrefix}$(semver -i prerelease "${pre_tag#"$tagPrefix"}" --preid "${suffix}")
         echo -e "Bumping ${suffix} pre-tag ${pre_tag}. New pre-tag ${new}"
-        setOutput "old_tag" "$pre_tag"
+        setOutput "old_tag" "$old_pre_tag"
     else
         new="${new}-${suffix}.0"
         echo -e "Setting ${suffix} pre-tag ${pre_tag} - With pre-tag ${new}"
-        setOutput "old_tag" "$tag"
+        setOutput "old_tag" "$old_tag"
     fi
     part="pre-$part"
 else
     echo -e "Bumping tag ${tag} - New tag ${new}"
-    setOutput "old_tag" "$tag"
+    setOutput "old_tag" "$old_tag"
 fi
 
 # as defined in readme if CUSTOM_TAG is used any semver calculations are irrelevant.
